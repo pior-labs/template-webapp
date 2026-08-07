@@ -13,6 +13,7 @@ This template provides the application-side foundation. Shared infrastructure re
 - PostgreSQL + Drizzle ORM
 - `@pior-labs/design-system`
 - Docker / Docker Compose
+- Caddy static web runtime
 - platform-managed database secret support
 - `pior_edge` and `pior_data` network conventions
 - API and web health checks
@@ -49,7 +50,28 @@ The default development ports are:
 - web: `http://localhost:5173`
 - API: `http://localhost:3000`
 
-Vite proxies `/api/*` to the local API.
+Vite proxies `/api/*` to the local API during development.
+
+## Production request routing
+
+Production routing belongs to the platform Caddy instance managed by `platform-deploy`.
+
+The expected pattern is:
+
+```text
+<app>.szarans.ca / <app>.ts.szarans.ca
+        |
+        v
+platform Caddy
+  |-- /api/* --> <app>-api:3000
+  `-- /*      --> <app>-web:80
+                         |
+                         v
+                  static Caddy
+                  SPA files only
+```
+
+The Caddy process inside the web container is deliberately not a reverse proxy. It only serves the compiled Vite application and falls back to `index.html` for client-side routes. API routing, domains, TLS, and ingress remain platform responsibilities.
 
 ## Database
 
@@ -111,4 +133,4 @@ Once the app has been validated, add the desired automatic trigger (normally a p
 
 This repository owns app-specific code, schema/migrations, containers, CI/CD, and documentation.
 
-It should not become the source of truth for shared Caddy configuration, PostgreSQL server provisioning, DNS conventions, central authentication implementation, or other Pior Labs platform infrastructure.
+It should not become the source of truth for shared Caddy routing, PostgreSQL server provisioning, DNS conventions, central authentication implementation, or other Pior Labs platform infrastructure.
