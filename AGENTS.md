@@ -21,9 +21,12 @@ Prefer the established Pior Labs paved road:
 - GitHub Actions
 - `@pior-labs/design-system`
 - `service-auth` for OAuth/OIDC
-- Caddy/platform networking managed outside this repository
+- platform Caddy for production routing and TLS
+- a minimal Caddy runtime inside the web container for static SPA serving only
 
-Do not add a second authentication system, reverse proxy, database server, or shared design system without a concrete requirement.
+`platform-deploy` owns production reverse-proxy behavior. The app web container must not proxy `/api/*`; platform Caddy routes API traffic directly to the app API container and all other traffic to the app web container.
+
+Do not add a second authentication system, app-level reverse proxy, database server, or shared design system without a concrete requirement.
 
 ## Repository ownership
 
@@ -32,10 +35,11 @@ This repository owns:
 - product code
 - app-specific database schema and migrations
 - app-specific containers
+- the static web-server configuration used only to serve the compiled SPA
 - CI and app deployment workflow
 - application documentation
 
-`platform-deploy` owns production infrastructure, Caddy routing, shared Docker networks, database/role provisioning, and server-managed database credentials.
+`platform-deploy` owns production infrastructure, Caddy reverse-proxy routing, shared Docker networks, database/role provisioning, and server-managed database credentials.
 
 `service-auth` owns user authentication and trusted OAuth client registration.
 
