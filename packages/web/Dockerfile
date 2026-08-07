@@ -11,6 +11,7 @@ RUN --mount=type=secret,id=github_token \
 COPY packages/web packages/web
 RUN pnpm --filter @webapp/web build
 
-FROM nginx:1.27-alpine AS runtime
-COPY packages/web/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/packages/web/dist /usr/share/nginx/html
+FROM caddy:2-alpine AS runtime
+COPY packages/web/Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/packages/web/dist /srv
+EXPOSE 80
