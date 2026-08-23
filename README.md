@@ -52,6 +52,11 @@ The default development ports are:
 
 Vite proxies `/api/*` to the local API during development.
 
+Pior Labs applications reuse port `5173` one at a time. Local application
+development authenticates against hosted `https://auth.szarans.ca`; it does not
+require a local `service-auth` process. Each application may keep its own API
+port behind the Vite proxy.
+
 ## Production request routing
 
 Production routing belongs to the platform Caddy instance managed by `platform-deploy`.
@@ -101,13 +106,45 @@ Each application receives its own trusted OAuth client in `service-auth`.
 
 Configure the API with:
 
-```text
-CENTRAL_AUTH_ISSUER=
-CENTRAL_AUTH_CLIENT_ID=
-CENTRAL_AUTH_CLIENT_SECRET=
+```env
+BETTER_AUTH_SECRET=<separate-application-session-secret>
+BETTER_AUTH_URL=http://localhost:5173
+BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+CENTRAL_AUTH_ISSUER=https://auth.szarans.ca/api/auth
+CENTRAL_AUTH_DISCOVERY_URL=https://auth.szarans.ca/api/auth/.well-known/openid-configuration
+CENTRAL_AUTH_CLIENT_ID=<app-client-id>
+CENTRAL_AUTH_CLIENT_SECRET=<matching-server-only-client-secret>
 ```
 
 Do not expose `CENTRAL_AUTH_CLIENT_SECRET` to Vite/browser code. Use the current `service-auth` documentation as the source of truth for issuer, discovery, callback, scope, PKCE, and token handling details.
+
+Every application must configure a unique Better Auth cookie namespace. Cookies
+are scoped by hostname rather than port and persist after a development server
+stops, so the default `better-auth.*` names collide when switching between apps:
+
+```ts
+export const auth = betterAuth({
+  // database, OAuth plugin, and model mapping...
+  advanced: {
+    cookiePrefix: 'myapp',
+    database: {
+      generateId: 'serial',
+    },
+  },
+});
+```
+
+Register both callbacks on the application's unique OAuth client:
+
+```text
+https://<app>.szarans.ca/api/auth/oauth2/callback/auth-pior
+http://localhost:5173/api/auth/oauth2/callback/auth-pior
+```
+
+After changing a production client registration, run Service Auth's Bootstrap
+workflow to reseed clients and then its Deploy workflow to restart Auth and
+reload cached registrations.
 
 ## Design system
 
