@@ -33,7 +33,7 @@ Central OAuth/OIDC authentication is intentionally represented as configuration 
 6. Configure GitHub Packages access so `@pior-labs/design-system` can install.
 7. Define the application's real Drizzle schema and generate its first migration.
 8. Register the OAuth client in `service-auth`.
-9. Add the application database/role and routing configuration in `platform-deploy`.
+9. Add the application database/role and Caddy routing configuration in `platform-deploy`. Wildcard DNS already covers the canonical hostname.
 10. Configure the repository's production runner, `APP_ENV` secret, and `DEPLOY_DIR` variable before enabling deployment.
 
 ## Local development
@@ -61,7 +61,9 @@ port behind the Vite proxy.
 
 Production routing belongs to the platform Caddy instance managed by `platform-deploy`.
 
-Each application uses one canonical `<app>.szarans.ca` hostname. The same hostname is used from the trusted LAN and through Tailscale; split-horizon DNS returns the appropriate private address for the client's network context.
+Each application uses one canonical `<app>.szarans.ca` hostname. The same hostname is used from the trusted LAN and through Tailscale; Cloudflare and Tailscale wildcard DNS return the appropriate private address for the client's network context.
+
+New applications do not require an application-specific Cloudflare CNAME, dnsmasq host record, or Tailscale restricted-nameserver entry. They still require an explicit platform Caddy route. Add a Docker DNS alias only when another container must call the application through its canonical HTTPS hostname.
 
 The expected pattern is:
 
