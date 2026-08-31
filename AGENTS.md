@@ -26,6 +26,8 @@ Prefer the established Pior Labs paved road:
 
 `platform-deploy` owns production reverse-proxy behavior. The app web container must not proxy `/api/*`; platform Caddy routes API traffic directly to the app API container and all other traffic to the app web container.
 
+Choose one canonical `<app>.szarans.ca` hostname. The platform's Cloudflare and Tailscale wildcard DNS rules cover it automatically, so do not add per-application CNAME records, dnsmasq host records, or restricted nameservers. Caddy routing remains explicit. Add a Docker DNS alias only when canonical service-to-service HTTPS requires one.
+
 Do not add a second authentication system, app-level reverse proxy, database server, or shared design system without a concrete requirement.
 
 ## Local authentication convention
@@ -71,6 +73,6 @@ When this template becomes a real app:
 3. generate and commit the first Drizzle migration;
 4. choose an app-specific cookie prefix and register the OAuth client with the
    canonical and shared `localhost:5173` callbacks;
-5. provision the database and routes in `platform-deploy`;
+5. provision the database and Caddy routes in `platform-deploy`; wildcard DNS requires no per-app record;
 6. configure deployment variables/secrets;
 7. update this file only where the application genuinely deviates from platform conventions.
