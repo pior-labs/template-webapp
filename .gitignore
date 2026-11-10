@@ -9,3 +9,8 @@ dist/
 coverage/
 data/
 .vite/
+
+__pycache__/
+
+.agents/
+.claude/

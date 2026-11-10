@@ -170,10 +170,17 @@ docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --bu
 
 `.github/workflows/deploy.yml` is manual by default. This prevents a newly generated repository from attempting a production deployment before its runner, environment, database, auth client, and routes are provisioned.
 
-Once the app has been validated, add the desired automatic trigger (normally a push to `main`).
+Deployment stays manual after CI succeeds. Use a verified CI run ID to select immutable images; do not add a direct push-to-main production job.
 
 ## Repository boundaries
 
 This repository owns app-specific code, schema/migrations, containers, CI/CD, and documentation.
 
 It should not become the source of truth for shared Caddy routing, PostgreSQL server provisioning, DNS conventions, central authentication implementation, or other Pior Labs platform infrastructure.
+
+## Verified CI releases
+
+CI publishes immutable images after validation; production deployment is manual
+and selects a successful main CI run. Configure the separate
+`COMPOSE_PROJECT_NAME` Actions secret and follow [deployment operations](docs/DEPLOYMENT.md)
+for activation, exact run selection, persistent-data boundaries and recovery.
