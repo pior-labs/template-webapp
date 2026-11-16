@@ -2,7 +2,7 @@
   "name": "pior-labs-webapp-template",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@10.8.1",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "dev": "pnpm --parallel --filter @webapp/api --filter @webapp/web dev",
     "dev:api": "pnpm --filter @webapp/api dev",
