@@ -38,12 +38,22 @@ Central OAuth/OIDC authentication is intentionally represented as configuration 
 
 ## Local development
 
+Install the Node.js version in `.node-version` (fnm, mise, nodenv and asdf read
+it directly) and any pnpm release, for example `npm install --global pnpm`.
+pnpm switches itself to the version in `packageManager`. Node.js 25 and later
+no longer bundle Corepack, so `corepack enable` is not available.
+
 ```bash
-corepack enable
 cp .env.example .env
 pnpm install
 pnpm dev
 ```
+
+Runtime versions have one source each: `.node-version` for Node.js and
+`packageManager` in `package.json` for pnpm. Dockerfiles use the same Node.js
+version pinned by digest, and `engines.node` allows its major. CI runs
+`scripts/check_versions.py`, which fails when these disagree. Renovate updates
+them together.
 
 The default development ports are:
 
