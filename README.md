@@ -152,6 +152,14 @@ reload cached registrations.
 
 The web package consumes `@pior-labs/design-system` from GitHub Packages. `.npmrc` configures the `@pior-labs` scope and `packages/web/src/index.css` imports the shared theme.
 
+The registry credential does not belong in the committed `.npmrc`: current pnpm releases ignore environment variables in project-level credentials. Put it in your user-level `~/.npmrc` instead, with a classic token that has `read:packages` exported as `GITHUB_TOKEN`:
+
+```ini
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+CI writes the same line to the runner's `~/.npmrc`, and the web Dockerfile uses a temporary user config fed by the `github_token` build secret. The workspace `scripts/setup-dev.sh` supplies the token for you during setup.
+
 ## Docker
 
 The base Compose file joins the shared platform networks and publishes no host ports. For server-local debugging, use the local override:
