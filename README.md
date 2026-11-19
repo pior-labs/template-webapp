@@ -8,7 +8,7 @@ This template provides the application-side foundation. Shared infrastructure re
 
 - pnpm workspace
 - TypeScript
-- React 19 + Vite frontend
+- React + Vite frontend
 - Hono API
 - PostgreSQL + Drizzle ORM
 - `@pior-labs/design-system`
