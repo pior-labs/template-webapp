@@ -150,8 +150,8 @@ export const auth = betterAuth({
 Register both callbacks on the application's unique OAuth client:
 
 ```text
-https://<app>.szarans.ca/api/auth/oauth2/callback/auth-pior
-http://localhost:5173/api/auth/oauth2/callback/auth-pior
+https://<app>.szarans.ca/api/auth/callback/auth-pior
+http://localhost:5173/api/auth/callback/auth-pior
 ```
 
 After changing a production client registration, run Service Auth's Bootstrap
